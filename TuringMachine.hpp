@@ -9,16 +9,18 @@
 #ifndef TURINGMACHINE_HPP
 #define TURINGMACHINE_HPP
 
+#include <map>
 #include <iostream>
 #include <vector>
 #include <string>
-#include "TuringMachineTransitions.hpp"
+#include "TuringMachineTransition.hpp"
 
 using namespace std;
 
 class TuringMachine {
   private:
-    vector<TuringMachineTransitions> transitions;     // vector containing all states
+    map< int , map< char , map < char, vector<int>*   > > > transitions;
+    //vector<TuringMachineTransitions> transitions;     // vector containing all states
     //vector<char> inputString;             // vector containing an input string
     vector<vector<char>> inputs;           //list containing all strings
   public:

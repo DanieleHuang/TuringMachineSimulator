@@ -1,5 +1,6 @@
+.gitignore
 .DS_Store
-"Icon\r"
+/"Icon\r/"
 *.o
 tmSimulator
 input*.txt

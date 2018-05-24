@@ -13,24 +13,24 @@
 using namespace std;
 
 
-enum class Move { R, S, L };
+//enum class Move { "R", "S", "L" };
 class TuringMachineTransitions {
 
   private:
     int startState;
     char input;
     char replace;
-    Move move;
+    char move;
     int nextState;
   public:
-    TuringMachineTransitions(int startState, char input, char replace, Move move, int nextState);
+    TuringMachineTransitions(int startState, char input, char replace, char move, int nextState);
     ~TuringMachineTransitions();
 
     int getStartState ();
     int getNextState () ;
     char getInput () ;
     char getReplace ();
-    Move getMove () ;
+    char getMove () ;
 
 
 

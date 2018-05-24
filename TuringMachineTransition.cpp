@@ -8,11 +8,11 @@
 
 #include <string>
 #include <iostream>
-#include "TuringMachineTransitions.hpp"
+#include "TuringMachineTransition.hpp"
 using namespace std;
 
 TuringMachineTransitions::TuringMachineTransitions(int sState, char in,
-                                       char rep, Move mv, int nState){
+                                       char rep, char mv, int nState){
 
    startState = sState;
    input = in;
@@ -31,4 +31,4 @@ char TuringMachineTransitions::getInput () {return input; }
 
 char TuringMachineTransitions::getReplace () { return replace; }
 
-Move TuringMachineTransitions:: getMove () { return move; }
+char TuringMachineTransitions:: getMove () { return move; }

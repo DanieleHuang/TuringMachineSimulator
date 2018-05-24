@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <fstream>
 #include "TuringMachine.hpp"
-#include "TuringMachineTransitions.hpp"
+#include "TuringMachineTransition.hpp"
 
 using namespace std;
 
@@ -23,8 +23,9 @@ int main ( int argc, char ** argv ){
 
    if( !machine->loadFromFile( argv[1]) ){
       cout << "Error loading the input file!\n";
+      return -1;
    }
-
+  
    ofstream out;
 
    out.open( argv[2] );
@@ -35,6 +36,6 @@ int main ( int argc, char ** argv ){
    }
 
    out.seekp( 0, ios_base :: beg);
-   
+
    return 0;
 }
