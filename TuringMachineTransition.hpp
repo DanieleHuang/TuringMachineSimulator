@@ -5,8 +5,8 @@
 *Description: this file contains the state implementation for state machines
 */
 
-#ifndef TuringMachineTransitions_HPP
-#define TuringMachineTransitions_HPP
+#ifndef TuringMachineTransition_HPP
+#define TuringMachineTransition_HPP
 
 #include <string>
 #include <iostream>
@@ -14,7 +14,7 @@ using namespace std;
 
 
 //enum class Move { "R", "S", "L" };
-class TuringMachineTransitions {
+class TuringMachineTransition {
 
   private:
     int startState;
@@ -23,8 +23,8 @@ class TuringMachineTransitions {
     char move;
     int nextState;
   public:
-    TuringMachineTransitions(int startState, char input, char replace, char move, int nextState);
-    ~TuringMachineTransitions();
+    TuringMachineTransition(int startState, char input, char replace, char move, int nextState);
+    ~TuringMachineTransition();
 
     int getStartState ();
     int getNextState () ;

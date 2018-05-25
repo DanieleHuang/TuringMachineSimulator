@@ -11,7 +11,7 @@
 #include "TuringMachineTransition.hpp"
 using namespace std;
 
-TuringMachineTransitions::TuringMachineTransitions(int sState, char in,
+TuringMachineTransition::TuringMachineTransition(int sState, char in,
                                        char rep, char mv, int nState){
 
    startState = sState;
@@ -21,14 +21,14 @@ TuringMachineTransitions::TuringMachineTransitions(int sState, char in,
    nextState = nState;
 }
 
-TuringMachineTransitions::~TuringMachineTransitions(){}
+TuringMachineTransition::~TuringMachineTransition(){}
 
-int TuringMachineTransitions::getStartState () { return startState; }
+int TuringMachineTransition::getStartState () { return startState; }
 
-int TuringMachineTransitions::getNextState () { return nextState; }
+int TuringMachineTransition::getNextState () { return nextState; }
 
-char TuringMachineTransitions::getInput () {return input; }
+char TuringMachineTransition::getInput () {return input; }
 
-char TuringMachineTransitions::getReplace () { return replace; }
+char TuringMachineTransition::getReplace () { return replace; }
 
-char TuringMachineTransitions:: getMove () { return move; }
+char TuringMachineTransition:: getMove () { return move; }
