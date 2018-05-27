@@ -42,14 +42,25 @@ int main ( int argc, char ** argv ){
    }
 
    out.seekp( 0, ios_base :: beg);
-   cerr <<machine->transitions->size()<<endl;
+
    auto it = machine->transitions->begin();
    for( it; it != machine->transitions->end(); it++){
-     cout <<  it->first << endl;
+
+     auto input = it->second;
+     auto it0 = input.begin();
+     for( it0; it0 != input.end(); it0++ ){
+       for( int i =0; i<(it0->second).size(); i++)
+       cout << it->first << it0-> first <<(it0->second)[i]<< " ";
+     }
    }
+   cout << endl;
 
    vector<char*> inputStrings = machine->getInputStrings();
    char* first = inputStrings[0];
-   if( deterministic) machine->computeNextState(0,0, first );
+
+   bool result = 0;
+   if( deterministic)
+     result = machine->computeNextState(0,0, first );
+   if( !result) return -1;
    return 0;
 }

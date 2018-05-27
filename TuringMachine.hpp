@@ -32,18 +32,14 @@ class TuringMachine {
   public:
     TuringMachine(void);                    //constr
     ~TuringMachine();
-map< int , map< char , map < char, vector<int>*   > > > * transitions =
-         new map< int , map< char , map < char, vector<int>*   > > >;
-
+map< int , map< char , vector<char*>  > > * transitions;
     bool loadFromFile( /*const char * in_filename */);
 
     //compute next state according to input character
-    int computeNextState(int currIndex, int currState, char* input);
+    bool computeNextState(int currIndex, int currState, char* input);
     int getMaxLoops();
 
-    char getReplace(int sState, char input);
-    char getNextMove (int sState, char input, char replace);
-    int getNState ( int sState, char input, char replace, char move);
+    char* getRepMoveNext(int sState, char input);
     vector <char *>  getInputStrings();
 
 };
