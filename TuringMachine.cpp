@@ -141,7 +141,8 @@
        }
        else if( readAccept ){
          int accept  = stoi( cpy );
-         acceptStates.push_back(accept);
+         acceptState = accept;
+         //acceptStates.push_back(accept);
         // cerr << "Inserting new accept state "<< accept << endl;
        }
        else if( readMax ){
@@ -199,23 +200,26 @@
          }
         //sState was already added to the hashmap
         else{
-           map<char, vector<char*> >   inputMap = transIt->second;
-           auto transInput = inputMap.find(*inputChar);
+           //map<char, vector<char*> >   inputMap = transIt->second;
+           auto transInput = transIt->second.find(*inputChar);
+           //transIt->second is the inputMap
 
            //if inputChar has not been seen before
-           if( transInput ==  inputMap.end() ){
+           if( transInput ==  transIt->second.end() ){
                   //cerr<<"Inserting new input"<<endl;
+              cerr << "Size of Map " << transIt->first << " before is "<< (transIt->second).size()<<endl;
               auto replaceVector = new vector<char*>;
 
               replaceVector->push_back(rmn);
 
 
-              inputMap.insert( {inputChar[0], *replaceVector} );
+              transIt->second.insert( {inputChar[0], *replaceVector} );
+              cerr << ">>>InputMap size "<< transIt->second.size() <<endl;
               cerr<< "new Input "<<sState << " " <<inputChar << " " <<replace << " " << move << " " << next <<endl;
 
               cerr << "Size of Map " << transIt->first << " is "<< (transIt->second).size()<<endl;
-              transInput = inputMap.begin();
-              for(transInput; transInput!= inputMap.end(); transInput++ )
+              transInput = (transIt->second).begin();
+              for(transInput; transInput!= (transIt->second).end(); transInput++ )
                 cout << transInput->first <<(transInput->second)[0]<< " ";
               cout << endl;
             }
@@ -236,9 +240,9 @@
           auto input = it->second;
           auto it0 = input.begin();
           for( it0; it0 != input.end(); it0++ ){
-            cout <<  "\t( \"" <<it0->first<< "\" size: "<< (it0->second).size() << " )"<<endl;
+            //cout <<  "\t( \"" <<it0->first<< "\" size: "<< (it0->second).size() << " )"<<endl;
             //for( int i = 0; i < (it0->second).size(); i++)
-              cout << it->first << it0->first << (it0->second)[0]<< " ";
+              cout << it->first << it0->first << (it0->second)[0]<< endl;
           }
           cout<< endl;
         }
@@ -262,6 +266,9 @@
    return inputs;
  }
 
+ bool TuringMachine::isAcceptState(int state){
+   return ((state==acceptState)? true : false);
+ }
 
  int TuringMachine::getMaxLoops(){
    return maxIterations;
@@ -285,30 +292,44 @@
    return NULL;
  }
 
+ bool TuringMachine::compute(char* input){
+   int index = 0;
+   int currState = 0;
+   cerr << "State |\t index\t| input"<<endl;
+   for( int run = 0; run < getMaxLoops() ; run ++){
 
-  bool TuringMachine::computeNextState(int currIndex, int currState, char* input){
-   int currentIndex = currIndex;
-   int currentState = currState;
-   cerr << "State | input "<<endl;
-   cerr << currentState << "     " << input<<endl;
-   for( int i =0 ; i < /*getMaxLoops()*/ 10; i ++){
-     char currChar = input[currIndex];
-     char* rmn =  getRepMoveNext( currentState, currChar);
-     if ( !rmn){
-       cout << "Something went wrong!\n";
+     if( computeNextState( &index, &currState, input )==NULL)
        return false;
-     }
-     char replace = getReplace( rmn);
-     char move = getMove(rmn);
-     int nState  = getNext(rmn);
-     cerr << "Applying: "<< currentState << " "<< currChar << " " <<
-              replace << " "<< move << " "<<nState <<endl;
-
-     //start operating
-     input[currentIndex] = replace;
-     currentIndex += getArrayMove( move);
-     currentState = nState;
-     cerr << currentState << "    " << input<<endl;
+     if( isAcceptState(currState))
+       return true;
    }
-   return true;
- }
+   cout << "Machine was stopped manually." <<endl;
+   return false;
+}
+
+  char* TuringMachine::computeNextState(int * currIndex, int *currState, char* input){
+    int currentIndex = *currIndex;
+    int currentState = *currState;
+
+    cerr << currentState << "     " << input<<endl;
+
+    char currChar = input[currentIndex];
+    char* rmn =  getRepMoveNext( currentState, currChar);
+    if ( !rmn){
+      cout << "Machine is stuck! The string is not accepted\n";
+      return NULL;
+    }
+    char replace = getReplace( rmn);
+    char move = getMove(rmn);
+    int nState  = getNext(rmn);
+    //cerr << "Applying: "<< currentState << " "<< currChar << " " <<
+      //        replace << " "<< move << " "<<nState <<endl;
+
+    //start operating
+    input[currentIndex] = replace;
+    *currIndex = *currIndex + getArrayMove( move);
+    *currState = nState;
+    //cerr << currentState << "\t" << *currIndex << "\t" <<input<< endl;
+
+    return input;
+}
