@@ -16,6 +16,9 @@
  TuringMachine::TuringMachine(void){
    cerr <<"Creating a new Turing Machine!"<<endl;
    transitions = new map< int , map< char , vector<char*>  > >;
+   currStates = new vector<int>;
+   currInputIndex = new vector<int>;
+   currStrings = new vector<char*>;
  }
  TuringMachine::~TuringMachine(){ }
 
@@ -196,7 +199,7 @@
 
           inputMap->insert( {inputChar[0], *replaceMap} );
           transitions->insert( {sState, *inputMap});
-          cerr<< "new sState " <<sState << " " <<inputChar << " " <<replace << " " << move << " " << next <<endl;
+          //cerr<< "new sState " <<sState << " " <<inputChar << " " <<replace << " " << move << " " << next <<endl;
          }
         //sState was already added to the hashmap
         else{
@@ -206,47 +209,52 @@
 
            //if inputChar has not been seen before
            if( transInput ==  transIt->second.end() ){
-                  //cerr<<"Inserting new input"<<endl;
-              cerr << "Size of Map " << transIt->first << " before is "<< (transIt->second).size()<<endl;
+              //cerr<<"Inserting new input"<<endl;
+              //cerr << "Size of Map " << transIt->first << " before is "<< (transIt->second).size()<<endl;
               auto replaceVector = new vector<char*>;
 
               replaceVector->push_back(rmn);
 
 
               transIt->second.insert( {inputChar[0], *replaceVector} );
-              cerr << ">>>InputMap size "<< transIt->second.size() <<endl;
+              /*cerr << ">>>InputMap size "<< transIt->second.size() <<endl;
               cerr<< "new Input "<<sState << " " <<inputChar << " " <<replace << " " << move << " " << next <<endl;
 
               cerr << "Size of Map " << transIt->first << " is "<< (transIt->second).size()<<endl;
               transInput = (transIt->second).begin();
               for(transInput; transInput!= (transIt->second).end(); transInput++ )
                 cout << transInput->first <<(transInput->second)[0]<< " ";
-              cout << endl;
+              cout << endl;*/
             }
 
             //inputChar has already been seen
             else{
-              auto replaceMap = transInput-> second;
-              replaceMap.push_back(rmn);
-              cerr<< "new replace " <<sState << " " <<inputChar << " " <<replace << " " << move << " " << next <<endl;
+              //add rmn to vector of inputChar
+              (transIt->second.find(*inputChar))->second.push_back(rmn);
 
+
+              //cerr<< "new replace " <<sState << " " <<inputChar << " " <<replace << " " << move << " " << next <<endl;
+              //cerr << "size of vector is " << (transIt->second.find(*inputChar))->second.size();
             }
           }
         }
-        cerr << "@@@@@ Map contains : "<<endl;
+        /*cerr << "@@@@@ Map contains : "<<endl;
         auto it = transitions->begin();
         for( it; it != transitions->end(); it++){
           cout <<  it->first << " size: " << it->second.size() <<endl;
           auto input = it->second;
           auto it0 = input.begin();
           for( it0; it0 != input.end(); it0++ ){
-            //cout <<  "\t( \"" <<it0->first<< "\" size: "<< (it0->second).size() << " )"<<endl;
-            //for( int i = 0; i < (it0->second).size(); i++)
-              cout << it->first << it0->first << (it0->second)[0]<< endl;
+
+              //cout << it->first << it0->first << " size: "<<(it0->second).size()<<" >>> "<< endl;
+              auto vector = it0->second;
+              for(int i = 0; i<vector.size();i++){
+                cout << it->first << it0->first << vector[i] << endl;
+              }
           }
           cout<< endl;
         }
-        cerr << "$$$$$$$$$$$$"<<endl<<endl;
+        cerr << "$$$$$$$$$$$$"<<endl<<endl;*/
 
 
 
@@ -291,14 +299,33 @@
    }
    return NULL;
  }
+ vector<char*> * TuringMachine::getRMNVector(int sState, char input){
+   auto it = transitions->find(sState);
+   //sState not found
+   if( it == transitions->end()) return NULL;
+   //sState found
+   else{
+     auto inputMap = it->second;
+     auto it0 = inputMap.find( input);
+     if( it0 == inputMap.end() ) return NULL;
+     else{
+       //char * rmn = (it0->second)[0];
+       cerr<<"Returning";
 
- bool TuringMachine::compute(char* input){
+       //cerr<< it0->second.size()<<endl;
+       return &(it0->second);
+     }
+   }
+   return NULL;
+ }
+
+ bool TuringMachine::computeDet(char* input){
    int index = 0;
    int currState = 0;
    cerr << "State |\t index\t| input"<<endl;
    for( int run = 0; run < getMaxLoops() ; run ++){
 
-     if( computeNextState( &index, &currState, input )==NULL)
+     if( computeNextState( &index, &currState, input, NULL )==NULL)
        return false;
      if( isAcceptState(currState))
        return true;
@@ -307,23 +334,89 @@
    return false;
 }
 
-  char* TuringMachine::computeNextState(int * currIndex, int *currState, char* input){
+bool TuringMachine::computeNonDet(char* input){
+    int currIndex = 0;
+    int currState = 0;
+    char* currString;
+    vector<char *>  rmnVec;
+    char* retString;
+    int transCounter = 0;
+    currInputIndex->push_back(currIndex);
+    currStates->push_back(currState);
+    currStrings->push_back(input);
+
+    for ( int run = 0; run < /*getMaxLoops()*/10 ; run++ ){
+      transCounter = currInputIndex->size();
+      //loop through all the states once
+      for(  int transition = 0; transition < transCounter; transition ++){
+        currIndex = currInputIndex->at(transition);
+        currState = currStates->at(transition);
+        currString = currStrings->at(transition);
+
+
+        //find rmnVector
+        auto it = transitions->find(currState);
+        //sState not found
+        //sState found
+        auto inputMap = it->second;
+        auto it0 = inputMap.find(currString[currIndex]);
+        //TODO remove transition from currently running
+        if( it0 == inputMap.end() ) continue;
+        else{
+
+          rmnVec = (it0->second);
+        }
+
+        /*(for( int i=0; i< rmnVec.size(); i++){
+          cerr<< rmnVec[i]<<endl;
+        }*/
+
+        for( int branch = 0; branch < rmnVec.size(); branch++){
+
+
+          retString = computeNextState(&currIndex, &currState, currString, (rmnVec)[branch] );
+
+          if( isAcceptState(currState))
+            return true;
+            if( retString && transition == 0 ){
+              (*currInputIndex)[transition] = currIndex;
+              (*currStates)[transition] = currState;
+              (*currStrings)[transition] = currString;
+            }
+            else if( retString ){
+              currInputIndex->push_back(currIndex);
+              currStates->push_back(currState);
+              currStrings->push_back(currString);
+            }
+        }
+      }
+    }
+    return false;
+}
+
+char* TuringMachine::computeNextState(int * currIndex, int *currState, char* input, char * repMovNext){
     int currentIndex = *currIndex;
     int currentState = *currState;
 
     cerr << currentState << "     " << input<<endl;
 
     char currChar = input[currentIndex];
-    char* rmn =  getRepMoveNext( currentState, currChar);
-    if ( !rmn){
-      cout << "Machine is stuck! The string is not accepted\n";
-      return NULL;
+    char* rmn;
+    //deterministic computation
+    if( repMovNext == NULL){
+      rmn =  getRepMoveNext( currentState, currChar);
+      if ( !rmn){
+        cout << "Machine is stuck! The string is not accepted\n";
+        return NULL;
+      }
+    }else{
+      rmn = repMovNext;
     }
-    char replace = getReplace( rmn);
-    char move = getMove(rmn);
-    int nState  = getNext(rmn);
-    //cerr << "Applying: "<< currentState << " "<< currChar << " " <<
-      //        replace << " "<< move << " "<<nState <<endl;
+      char replace = getReplace( rmn);
+      char move = getMove(rmn);
+      int nState  = getNext(rmn);
+      cerr << "Applying: "<< currentState << " "<< currChar << " " <<
+              replace << " "<< move << " "<<nState <<endl;
 
     //start operating
     input[currentIndex] = replace;

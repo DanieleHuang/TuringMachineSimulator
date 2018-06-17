@@ -19,12 +19,14 @@ int main ( int argc, char ** argv ){
 
          return -1;
    }
-   if( *argv[2] != 'd'  && *argv[2] != 'w'){
+   if( *argv[2] != 'd'  && *argv[2] != 'n'){
      cout << "Invalid flag." << endl;
      return -1;
    }
    bool deterministic =false;
    if( *argv[2] == 'd') deterministic = true;
+
+
    TuringMachine * machine = new TuringMachine();
 
    if( !machine->loadFromFile(/* argv[1])*/ )){
@@ -48,8 +50,12 @@ int main ( int argc, char ** argv ){
    char* first = inputStrings[0];
 
    bool result = 0;
-   if( deterministic){
-     result = machine->compute(first);
+   if( deterministic == true){
+     result = machine->computeDet(first);
+   }
+   else{
+
+     result = machine->computeNonDet(first);
    }
    if( !result) return -1;
    return 0;
