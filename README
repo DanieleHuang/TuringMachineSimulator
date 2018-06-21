@@ -1,5 +1,5 @@
 Simulation of Non Deterministic Turing Machines
 
-Usage: ./tmSimulator <InputFile> <OutputFile>
+Usage: ./tmSimulator < <InputFile> <OutputFile>
 
 
